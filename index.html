@@ -16,35 +16,20 @@
   <button onclick="addItem()">Adaugă</button>
   <ul id="shoppingList"></ul>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIz...xyz",
-    authDomain: "lista-cumparaturi.firebaseapp.com",
-    databaseURL: "https://lista-cumparaturi-default-rtdb.firebaseio.com",
-    projectId: "lista-cumparaturi",
-    storageBucket: "lista-cumparaturi.appspot.com",
-    messagingSenderId: "1234567890",
-    appId: "1:1234567890:web:abcdef123456"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-</script>
-
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
   <script>
-    // 🔧 Înlocuiește cu valorile tale din Firebase Console
     const firebaseConfig = {
-  apiKey: "AIzaSyA0TIu9z7LvFWDUkFBRd40Kk4HMRQJdAWc",
-  authDomain: "cumparaturi-60cff.firebaseapp.com",
-  projectId: "cumparaturi-60cff",
-  storageBucket: "cumparaturi-60cff.firebasestorage.app",
-  messagingSenderId: "230772707562",
-  appId: "1:230772707562:web:5464f6baf54ef1c325c793",
-  measurementId: "G-JP7XP67G65"
-};
+      apiKey: "AIzaSyA0TIu9z7LvFWDUkFBRd40Kk4HMRQJdAWc",
+      authDomain: "cumparaturi-60cff.firebaseapp.com",
+      projectId: "cumparaturi-60cff",
+      storageBucket: "cumparaturi-60cff.firebasestorage.app",
+      messagingSenderId: "230772707562",
+      appId: "1:230772707562:web:5464f6baf54ef1c325c793",
+      measurementId: "G-JP7XP67G65",
+      databaseURL: "https://cumparaturi-60cff-default-rtdb.firebaseio.com"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -52,7 +37,7 @@
     const listElement = document.getElementById('shoppingList');
     const inputElement = document.getElementById('itemInput');
 
-    // 🔄 Încarcă lista din Firebase
+    // Încarcă lista din Firebase
     db.ref('lista').on('value', snapshot => {
       listElement.innerHTML = '';
       const data = snapshot.val();
@@ -91,5 +76,3 @@
   </script>
 </body>
 </html>
-
-
