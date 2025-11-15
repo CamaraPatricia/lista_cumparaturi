@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de cumpărături</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin: 5px 0; }
+    .checked { text-decoration: line-through; color: gray; }
+  </style>
+</head>
+<body>
+  <h1>🛒 Lista de cumpărături</h1>
+  <input type="text" id="itemInput" placeholder="Adaugă un produs">
+  <button onclick="addItem()">Adaugă</button>
+  <ul id="shoppingList"></ul>
+
+  <script>
+    const listElement = document.getElementById('shoppingList');
+    const inputElement = document.getElementById('itemInput');
+
+    // Încarcă lista salvată
+    window.onload = function() {
+      const savedList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+      savedList.forEach(item => addItemToDOM(item.text, item.checked));
+    };
+
+    function addItem() {
+      const itemText = inputElement.value.trim();
+      if (itemText === '') return;
+
+      addItemToDOM(itemText, false);
+      saveItem(itemText, false);
+      inputElement.value = '';
+    }
+
+    function addItemToDOM(text, checked) {
+      const li = document.createElement('li');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = checked;
+
+      const span = document.createElement('span');
+      span.textContent = text;
+      if (checked) span.classList.add('checked');
+
+      checkbox.addEventListener('change', () => {
+        span.classList.toggle('checked');
+        updateItem(text, checkbox.checked);
+      });
+
+      li.appendChild(checkbox);
+      li.appendChild(span);
+      listElement.appendChild(li);
+    }
+
+    function saveItem(text, checked) {
+      const currentList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+      currentList.push({ text, checked });
+      localStorage.setItem('shoppingList', JSON.stringify(currentList));
+    }
+
+    function updateItem(text, checked) {
+      const currentList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+      const item = currentList.find(i => i.text === text);
+      if (item) {
+        item.checked = checked;
+        localStorage.setItem('shoppingList', JSON.stringify(currentList));
+      }
+    }
+  </script>
+</body>
+</html>
