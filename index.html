@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ro">
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <title>Lista de cumpărături</title>
@@ -13,46 +14,27 @@
 <body>
   <h1>🛒 Lista de cumpărături</h1>
   <input type="text" id="itemInput" placeholder="Adaugă un produs">
-  <button id="addButton">Adaugă</button>
+  <button onclick="addItem()">Adaugă</button>
   <ul id="shoppingList"></ul>
 
-  <!-- Firebase compat SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA0TIu9z7LvFWDUkFBRd40Kk4HMRQJdAWc",
-      authDomain: "cumparaturi-60cff.firebaseapp.com",
-      projectId: "cumparaturi-60cff",
-      storageBucket: "cumparaturi-60cff.firebasestorage.app",
-      messagingSenderId: "230772707562",
-      appId: "1:230772707562:web:5464f6baf54ef1c325c793",
-      measurementId: "G-JP7XP67G65",
-      databaseURL: "https://cumparaturi-60cff-default-rtdb.europe-west1.firebasedatabase.app"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
     const listElement = document.getElementById('shoppingList');
     const inputElement = document.getElementById('itemInput');
-    const addButton = document.getElementById('addButton');
 
-    // Încarcă lista din Firebase
-    db.ref('lista').on('value', snapshot => {
-      listElement.innerHTML = '';
-      const data = snapshot.val();
-      for (let key in data) {
-        addItemToDOM(key, data[key].checked);
-      }
-    });
+    // Încarcă lista salvată
+    window.onload = function() {
+      const savedList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+      savedList.forEach(item => addItemToDOM(item.text, item.checked));
+    };
 
-    addButton.addEventListener('click', () => {
+    function addItem() {
       const itemText = inputElement.value.trim();
       if (itemText === '') return;
-      db.ref('lista/' + itemText).set({ checked: false });
+
+      addItemToDOM(itemText, false);
+      saveItem(itemText, false);
       inputElement.value = '';
-    });
+    }
 
     function addItemToDOM(text, checked) {
       const li = document.createElement('li');
@@ -63,17 +45,33 @@
       const span = document.createElement('span');
       span.textContent = text;
       if (checked) span.classList.add('checked');
+      span.textColor = 'red';
 
       checkbox.addEventListener('change', () => {
         span.classList.toggle('checked');
-        db.ref('lista/' + text).update({ checked: checkbox.checked });
+        updateItem(text, checkbox.checked);
       });
 
       li.appendChild(checkbox);
       li.appendChild(span);
       listElement.appendChild(li);
     }
+
+    function saveItem(text, checked) {
+      const currentList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+      currentList.push({ text, checked });
+      localStorage.setItem('shoppingList', JSON.stringify(currentList));
+    }
+
+    function updateItem(text, checked) {
+      const currentList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+      const item = currentList.find(i => i.text === text);
+      if (item) {
+        item.checked = checked;
+        item.textColor = 'black';
+        localStorage.setItem('shoppingList', JSON.stringify(currentList));
+      }
+    }
   </script>
 </body>
 </html>
-
