@@ -45,10 +45,6 @@
       padding: 10px;
       background-color: #f9f9f9;
       border-radius: 4px;
-      border-left: 4px solid #4CAF50;
-    }
-    li.checked {
-      border-left-color: #ccc;
     }
     input[type="checkbox"] {
       width: 18px;
@@ -58,13 +54,11 @@
     span { 
       flex: 1;
       font-size: 16px;
+      color: #333;
     }
     span.checked { 
       text-decoration: line-through; 
       color: #999;
-    }
-    span:not(.checked) {
-      color: #333;
     }
     .delete-hint {
       font-size: 12px;
@@ -101,96 +95,73 @@
     const inputElement = document.getElementById('itemInput');
     const addButton = document.getElementById('addButton');
 
-    function capitalize(str) {
+    function cap(str) {
       return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
 
-    // Încarcă lista din Firebase - ascultă schimbările în timp real
+    // Încarcă lista din Firebase
     db.ref('lista').on('value', snapshot => {
       listElement.innerHTML = '';
       const data = snapshot.val();
+      if (!data) return;
       
-      if (!data) {
-        listElement.innerHTML = '<li style="color: #999;">Niciun produs</li>';
-        return;
+      for (let key in data) {
+        addItemToDOM(data[key].text, data[key].checked, key);
       }
-
-      // Sortează alfabetic
-      const items = Object.entries(data).sort((a, b) => 
-        a[1].localeCompare(b[1])
-      );
-
-      items.forEach(([key, value]) => {
-        // 'value' poate fi string (doar nume) sau object {text, checked}
-        let itemText = typeof value === 'string' ? value : value;
-        let isChecked = false;
-
-        if (typeof value === 'object' && value !== null) {
-          isChecked = value.checked || false;
-        }
-
-        addItemToDOM(itemText, isChecked, key);
-      });
     });
 
-    // Adaugă item la click sau Enter
-    addButton.addEventListener('click', addItem);
-    inputElement.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') addItem();
-    });
-
-    function addItem() {
+    // Adaugă item
+    addButton.addEventListener('click', () => {
       let itemText = inputElement.value.trim();
       if (itemText === '') return;
-
-      itemText = capitalize(itemText);
-
-      // Adaugă cu structura: { text, checked }
+      itemText = cap(itemText);
       db.ref('lista').push({
         text: itemText,
         checked: false
       });
-
       inputElement.value = '';
       inputElement.focus();
-    }
+    });
+
+    inputElement.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        addButton.click();
+      }
+    });
 
     // Crează item în DOM
     function addItemToDOM(text, checked, key) {
       const li = document.createElement('li');
-      if (checked) li.classList.add('checked');
-
+      
       // Checkbox
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.checked = checked;
-
-      // Text
+      
+      // Text span
       const span = document.createElement('span');
       span.textContent = text;
       if (checked) span.classList.add('checked');
-
-      // Update la schimbare checkbox
+      
+      // Update pe check
       checkbox.addEventListener('change', () => {
-        const isNowChecked = checkbox.checked;
+        const c = checkbox.checked;
         span.classList.toggle('checked');
-        li.classList.toggle('checked');
-        db.ref('lista/' + key).update({ checked: isNowChecked });
+        db.ref('lista/' + key).update({ checked: c });
       });
-
-      // Long-press pentru șterge
+      
+      // Long-press delete
       let pressTimer;
       li.addEventListener('mousedown', () => {
         pressTimer = setTimeout(() => {
-          if (confirm("Ștergi '" + text + "'?")) {
+          if (confirm("Ștergi acest produs?")) {
             db.ref('lista/' + key).remove();
           }
         }, 600);
       });
-
       li.addEventListener('mouseup', () => clearTimeout(pressTimer));
       li.addEventListener('mouseleave', () => clearTimeout(pressTimer));
-
+      
       li.appendChild(checkbox);
       li.appendChild(span);
       listElement.appendChild(li);
