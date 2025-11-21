@@ -37,25 +37,38 @@
     }
 
     function addItemToDOM(text, checked) {
-      const li = document.createElement('li');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.checked = checked;
+  const li = document.createElement('li');
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.checked = checked;
 
-      const span = document.createElement('span');
-      span.textContent = text;
-      if (checked) span.classList.add('checked');
-      span.textColor = 'red';
+  const span = document.createElement('span');
+  span.textContent = text;
 
-      checkbox.addEventListener('change', () => {
-        span.classList.toggle('checked');
-        updateItem(text, checkbox.checked);
-      });
+  // culoare inițială
+  span.style.color = checked ? 'black' : 'red';
+  if (checked) span.classList.add('checked');
 
-      li.appendChild(checkbox);
-      li.appendChild(span);
-      listElement.appendChild(li);
-    }
+  checkbox.addEventListener('change', () => {
+    span.classList.toggle('checked');
+    span.style.color = checkbox.checked ? 'black' : 'red';
+    updateItem(text, checkbox.checked);
+  });
+
+  li.appendChild(checkbox);
+  li.appendChild(span);
+  listElement.appendChild(li);
+}
+
+function updateItem(text, checked) {
+  const currentList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+  const item = currentList.find(i => i.text === text);
+  if (item) {
+    item.checked = checked;
+    localStorage.setItem('shoppingList', JSON.stringify(currentList));
+  }
+}
+
 
     function saveItem(text, checked) {
       const currentList = JSON.parse(localStorage.getItem('shoppingList')) || [];
@@ -63,15 +76,8 @@
       localStorage.setItem('shoppingList', JSON.stringify(currentList));
     }
 
-    function updateItem(text, checked) {
-      const currentList = JSON.parse(localStorage.getItem('shoppingList')) || [];
-      const item = currentList.find(i => i.text === text);
-      if (item) {
-        item.checked = checked;
-        item.textColor = 'black';
-        localStorage.setItem('shoppingList', JSON.stringify(currentList));
-      }
-    }
+    
   </script>
 </body>
 </html>
+
