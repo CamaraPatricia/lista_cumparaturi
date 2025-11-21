@@ -149,17 +149,27 @@
         db.ref('lista/' + key).update({ checked: c });
       });
       
-      // Long-press delete
+      // Long-press delete (mouse + touch)
       let pressTimer;
-      li.addEventListener('mousedown', () => {
+      
+      function startPress() {
         pressTimer = setTimeout(() => {
-          if (confirm("Ștergi acest produs?")) {
+          if (confirm("Ștergi '" + text + "'?")) {
             db.ref('lista/' + key).remove();
           }
         }, 600);
-      });
-      li.addEventListener('mouseup', () => clearTimeout(pressTimer));
-      li.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+      }
+      
+      function endPress() {
+        clearTimeout(pressTimer);
+      }
+      
+      li.addEventListener('mousedown', startPress);
+      li.addEventListener('mouseup', endPress);
+      li.addEventListener('mouseleave', endPress);
+      
+      li.addEventListener('touchstart', startPress);
+      li.addEventListener('touchend', endPress);
       
       li.appendChild(checkbox);
       li.appendChild(span);
