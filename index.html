@@ -106,7 +106,7 @@
       if (!data) return;
       
       for (let key in data) {
-        addItemToDOM(data[key].text, data[key].checked, key);
+        addItemToDOM(key, data[key].checked, key);
       }
     });
 
@@ -115,8 +115,7 @@
       let itemText = inputElement.value.trim();
       if (itemText === '') return;
       itemText = cap(itemText);
-      db.ref('lista').push({
-        text: itemText,
+      db.ref('lista').child(itemText).set({
         checked: false
       });
       inputElement.value = '';
