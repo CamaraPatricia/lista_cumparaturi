@@ -2,179 +2,235 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lista de cumpărături</title>
+  <script src = script.js defer></script>
   <style>
-    body { 
-      font-family: Arial; 
-      padding: 20px; 
-      max-width: 500px;
-      margin: 0 auto;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    h1 { color: #333; }
-    .input-container {
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    
+    .category-nav {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
+      justify-content: center;
+      margin-top: 20px;
     }
+    
+    .category-btn {
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .category-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+    
+    .category-btn.active {
+      background: white;
+      color: #667eea;
+      border-color: white;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .input-section {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    
     #itemInput {
       flex: 1;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      padding: 12px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 25px;
       font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
     }
-    #addButton {
-      padding: 10px 20px;
-      background-color: #4CAF50;
+    
+    #itemInput:focus {
+      border-color: #667eea;
+    }
+    
+    #addBtn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
-      border-radius: 4px;
-      cursor: pointer;
+      padding: 12px 30px;
+      border-radius: 25px;
       font-size: 16px;
-    }
-    #addButton:hover { background-color: #45a049; }
-    ul { 
-      list-style-type: none; 
-      padding: 0; 
-    }
-    li { 
-      margin: 8px 0; 
-      display: flex; 
-      gap: 10px; 
-      align-items: center;
-      padding: 10px;
-      background-color: #f9f9f9;
-      border-radius: 4px;
-    }
-    input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      font-weight: 600;
       cursor: pointer;
+      transition: transform 0.2s;
     }
-    span { 
+    
+    #addBtn:hover {
+      transform: translateY(-2px);
+    }
+    
+    #addBtn:active {
+      transform: translateY(0);
+    }
+    
+    .list-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .list-container::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .list-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .list-container::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 10px;
+    }
+    
+    ul {
+      list-style: none;
+    }
+    
+    li {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      transition: all 0.3s;
+    }
+    
+    li:hover {
+      background: #e9ecef;
+      transform: translateX(5px);
+    }
+    
+    li input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      margin-right: 15px;
+      accent-color: #667eea;
+    }
+    
+    li span {
       flex: 1;
       font-size: 16px;
-      color: red;
+      transition: all 0.3s;
     }
-    span.checked { 
-      text-decoration: line-through; 
-      color: #333;
-    }
-    .delete-hint {
-      font-size: 12px;
+    
+    li span.checked {
+      text-decoration: line-through;
       color: #999;
+      opacity: 0.6;
+    }
+    
+    .delete-btn {
+      background: #ff4757;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      opacity: 0;
+    }
+    
+    li:hover .delete-btn {
+      opacity: 1;
+    }
+    
+    .delete-btn:hover {
+      background: #ff3838;
+      transform: scale(1.05);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+    
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      opacity: 0.3;
     }
   </style>
 </head>
 <body>
-  <h1>🛒 Lista de cumpărături</h1>
-  <div class="input-container">
-    <input type="text" id="itemInput" placeholder="Adaugă un produs" autocomplete="off">
-    <button id="addButton">Adaugă</button>
+  <div class="container">
+    <div class="header">
+      <h1>🛒 Lista de cumpărături</h1>
+      <div class="category-nav">
+        <button class="category-btn active" data-category="0">🍎 Mâncare</button>
+        <button class="category-btn" data-category="1">🧴 Altele</button>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="input-section">
+        <input type="text" id="itemInput" placeholder="Adaugă un produs...">
+        <button id="addBtn">Adaugă</button>
+      </div>
+      
+      <div class="list-container">
+        <ul id="shoppingList"></ul>
+        <div id="emptyState" class="empty-state" style="display: none;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          <p>Lista ta este goală</p>
+        </div>
+      </div>
+    </div>
   </div>
-  <p class="delete-hint">💡 Ține apăsat 600ms pe un produs pentru a-l șterge</p>
-  <ul id="shoppingList"></ul>
-
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA0TIu9z7LvFWDUkFBRd40Kk4HMRQJdAWc",
-      authDomain: "cumparaturi-60cff.firebaseapp.com",
-      projectId: "cumparaturi-60cff",
-      storageBucket: "cumparaturi-60cff.firebasestorage.app",
-      messagingSenderId: "230772707562",
-      appId: "1:230772707562:web:5464f6baf54ef1c325c793",
-      measurementId: "G-JP7XP67G65",
-      databaseURL: "https://cumparaturi-60cff-default-rtdb.europe-west1.firebasedatabase.app"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const listElement = document.getElementById('shoppingList');
-    const inputElement = document.getElementById('itemInput');
-    const addButton = document.getElementById('addButton');
-
-    function cap(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-    }
-
-    // Încarcă lista din Firebase
-    db.ref('lista').on('value', snapshot => {
-      listElement.innerHTML = '';
-      const data = snapshot.val();
-      if (!data) return;
-      
-      for (let key in data) {
-        addItemToDOM(key, data[key].checked, key);
-      }
-    });
-
-    // Adaugă item
-    addButton.addEventListener('click', () => {
-      let itemText = inputElement.value.trim();
-      if (itemText === '') return;
-      itemText = cap(itemText);
-      db.ref('lista').child(itemText).set({
-        checked: false
-      });
-      inputElement.value = '';
-      inputElement.focus();
-    });
-
-    inputElement.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        addButton.click();
-      }
-    });
-
-    // Crează item în DOM
-    function addItemToDOM(text, checked, key) {
-      const li = document.createElement('li');
-      
-      // Checkbox
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.checked = checked;
-      
-      // Text span
-      const span = document.createElement('span');
-      span.textContent = text;
-      if (checked) span.classList.add('checked');
-      
-      // Update pe check
-      checkbox.addEventListener('change', () => {
-        const c = checkbox.checked;
-        span.classList.toggle('checked');
-        db.ref('lista/' + key).update({ checked: c });
-      });
-      
-      // Long-press delete (mouse + touch)
-      let pressTimer;
-      
-      function startPress() {
-        pressTimer = setTimeout(() => {
-          if (confirm("Ștergi '" + text + "'?")) {
-            db.ref('lista/' + key).remove();
-          }
-        }, 600);
-      }
-      
-      function endPress() {
-        clearTimeout(pressTimer);
-      }
-      
-      li.addEventListener('mousedown', startPress);
-      li.addEventListener('mouseup', endPress);
-      li.addEventListener('mouseleave', endPress);
-      
-      li.addEventListener('touchstart', startPress);
-      li.addEventListener('touchend', endPress);
-      
-      li.appendChild(checkbox);
-      li.appendChild(span);
-      listElement.appendChild(li);
-    }
-  </script>
-</body>
-</html>
